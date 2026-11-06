@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#d4af37">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BeautyControl Pro - Gestão de Maquiagens</title>
     
     <!-- Configuração de PWA e Ícone -->
@@ -15,95 +11,77 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d4af37">
 
-    <!-- Tailwind CSS para Estilização Fluida e Moderna -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Chart.js para os Gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-card { background: rgba(24, 24, 27, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(212, 175, 55, 0.15); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass-card { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(212, 175, 55, 0.2); }
         .rose-gradient { background: linear-gradient(135deg, #f472b6 0%, #d4af37 100%); }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col pb-10">
 
     <!-- HEADER -->
-    <header class="glass-card sticky top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-pink-500/20">
+    <header class="glass-card sticky top-0 z-40 px-4 py-3 flex items-center justify-between border-b border-pink-500/20">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl rose-gradient flex items-center justify-center text-zinc-950 font-bold shadow-lg shadow-pink-500/20">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
             </div>
             <div>
-                <h1 class="font-bold text-lg bg-gradient-to-r from-pink-300 via-rose-300 to-amber-300 bg-clip-text text-transparent">BeautyControl Pro</h1>
-                <p class="text-xs text-zinc-400">Controle de Estoque & Maquiagens</p>
+                <h1 class="font-bold text-base bg-gradient-to-r from-pink-300 via-rose-300 to-amber-300 bg-clip-text text-transparent">BeautyControl</h1>
+                <p class="text-[10px] text-zinc-400">Estoque de Maquiagens</p>
             </div>
         </div>
-        <div class="flex items-center space-x-3">
-            <button onclick="abrirVendaRapida()" class="bg-pink-600 hover:bg-pink-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2 shadow-lg shadow-pink-600/30">
-                <i class="fa-solid fa-cash-register"></i>
-                <span>Venda Rápida</span>
-            </button>
-            <button onclick="abrirGuiaCelular()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-2 rounded-xl text-sm transition border border-zinc-700">
-                <i class="fa-solid fa-mobile-screen-button text-pink-400"></i>
-                <span class="hidden md:inline ml-1">Acesso Celular</span>
-            </button>
-        </div>
+        <button type="button" onclick="abrirVendaRapida()" class="bg-pink-600 active:bg-pink-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-lg shadow-pink-600/30">
+            <i class="fa-solid fa-cash-register"></i>
+            <span>Venda Rápida</span>
+        </button>
     </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 space-y-5">
 
         <!-- DASHBOARD MÉTRICAS -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-                <div class="absolute right-4 top-4 text-pink-500/20 text-3xl"><i class="fa-solid fa-boxes-stacked"></i></div>
-                <p class="text-xs text-zinc-400 font-medium">Total de Produtos</p>
-                <h3 id="statTotalProdutos" class="text-2xl font-bold mt-1 text-zinc-100">0</h3>
-                <span class="text-xs text-pink-400 mt-2 inline-block"><i class="fa-solid fa-arrow-up"></i> Cadastrados no sistema</span>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="glass-card p-4 rounded-2xl">
+                <p class="text-[11px] text-zinc-400 font-medium">Total Produtos</p>
+                <h3 id="statTotalProdutos" class="text-xl font-bold mt-1 text-zinc-100">0</h3>
             </div>
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-                <div class="absolute right-4 top-4 text-amber-500/20 text-3xl"><i class="fa-solid fa-wallet"></i></div>
-                <p class="text-xs text-zinc-400 font-medium">Valor em Estoque (Custo)</p>
-                <h3 id="statValorCusto" class="text-2xl font-bold mt-1 text-zinc-100">R$ 0,00</h3>
-                <span class="text-xs text-amber-400 mt-2 inline-block">Investimento total</span>
+            <div class="glass-card p-4 rounded-2xl">
+                <p class="text-[11px] text-zinc-400 font-medium">Estoque Baixo</p>
+                <h3 id="statEstoqueBaixo" class="text-xl font-bold mt-1 text-rose-400">0</h3>
             </div>
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-                <div class="absolute right-4 top-4 text-emerald-500/20 text-3xl"><i class="fa-solid fa-chart-line"></i></div>
-                <p class="text-xs text-zinc-400 font-medium">Valor Potencial (Venda)</p>
-                <h3 id="statValorVenda" class="text-2xl font-bold mt-1 text-zinc-100">R$ 0,00</h3>
-                <span class="text-xs text-emerald-400 mt-2 inline-block">Retorno previsto</span>
+            <div class="glass-card p-4 rounded-2xl">
+                <p class="text-[11px] text-zinc-400 font-medium">Total Custo</p>
+                <h3 id="statValorCusto" class="text-sm font-bold mt-1 text-zinc-200">R$ 0,00</h3>
             </div>
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-                <div class="absolute right-4 top-4 text-rose-500/20 text-3xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <p class="text-xs text-zinc-400 font-medium">Estoque Baixo</p>
-                <h3 id="statEstoqueBaixo" class="text-2xl font-bold mt-1 text-rose-400">0</h3>
-                <span class="text-xs text-rose-400 mt-2 inline-block">Requer reposição</span>
+            <div class="glass-card p-4 rounded-2xl">
+                <p class="text-[11px] text-zinc-400 font-medium">Total Venda</p>
+                <h3 id="statValorVenda" class="text-sm font-bold mt-1 text-emerald-400">R$ 0,00</h3>
             </div>
         </div>
 
         <!-- ABAS DE NAVEGAÇÃO -->
         <div class="flex space-x-2 border-b border-zinc-800 pb-2 overflow-x-auto">
-            <button onclick="mudarAba('catalogo')" id="btn-catalogo" class="px-4 py-2 rounded-xl text-sm font-semibold bg-pink-600 text-white transition">Catálogo & Produtos</button>
-            <button onclick="mudarAba('movimentacoes')" id="btn-movimentacoes" class="px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-800 text-zinc-400 hover:text-white transition">Lançamentos Avulsos</button>
-            <button onclick="mudarAba('historico')" id="btn-historico" class="px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-800 text-zinc-400 hover:text-white transition">Histórico de Vendas</button>
+            <button type="button" onclick="mudarAba('catalogo')" id="btn-catalogo" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-pink-600 text-white">Catálogo</button>
+            <button type="button" onclick="mudarAba('movimentacoes')" id="btn-movimentacoes" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400">Lançamentos</button>
+            <button type="button" onclick="mudarAba('historico')" id="btn-historico" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400">Histórico</button>
         </div>
 
         <!-- ABA CATÁLOGO -->
         <div id="aba-catalogo" class="space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between gap-4">
-                <div class="flex items-center space-x-2 flex-1">
-                    <div class="relative w-full max-w-md">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-zinc-500"></i>
-                        <input type="text" id="filtroBusca" oninput="renderizarTabela()" placeholder="Buscar maquiagem por nome ou categoria..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-pink-500">
-                    </div>
+            <div class="flex flex-col gap-3">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-zinc-500 text-xs"></i>
+                    <input type="text" id="filtroBusca" oninput="renderizarTabela()" placeholder="Buscar maquiagem..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-pink-500">
                 </div>
-                <button onclick="abrirModalProduto()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-pink-500/30 px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-center space-x-2">
+                <button type="button" onclick="abrirModalProduto()" class="w-full bg-zinc-800 active:bg-zinc-700 text-zinc-100 border border-pink-500/30 py-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-plus text-pink-400"></i>
-                    <span>Novo Produto</span>
+                    <span>Cadastrar Nova Maquiagem</span>
                 </button>
             </div>
 
@@ -111,80 +89,71 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-zinc-800 text-xs text-zinc-400 uppercase bg-zinc-900/50">
-                                <th class="p-4">Produto</th>
-                                <th class="p-4">Categoria</th>
-                                <th class="p-4">Custo</th>
-                                <th class="p-4">Venda</th>
-                                <th class="p-4">Estoque</th>
-                                <th class="p-4">Status</th>
-                                <th class="p-4 text-right">Ações</th>
+                            <tr class="border-b border-zinc-800 text-[10px] text-zinc-400 uppercase bg-zinc-900/50">
+                                <th class="p-3">Produto</th>
+                                <th class="p-3">Venda</th>
+                                <th class="p-3">Qtd</th>
+                                <th class="p-3 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaProdutos" class="divide-y divide-zinc-800/50 text-sm">
-                            <!-- Preenchido via JavaScript -->
+                        <tbody id="tabelaProdutos" class="divide-y divide-zinc-800/50 text-xs">
+                            <!-- JS popula aqui -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- ABA MOVIMENTAÇÃO AVULSA -->
+        <!-- ABA MOVIMENTAÇÕES -->
         <div id="aba-movimentacoes" class="hidden space-y-4">
-            <div class="glass-card p-6 rounded-2xl max-w-xl mx-auto">
-                <h3 class="text-lg font-bold mb-4 flex items-center space-x-2">
+            <div class="glass-card p-5 rounded-2xl">
+                <h3 class="text-sm font-bold mb-3 flex items-center space-x-2">
                     <i class="fa-solid fa-right-left text-pink-400"></i>
-                    <span>Lançamento Avulso (Entrada / Saída)</span>
+                    <span>Entrada / Saída de Estoque</span>
                 </h3>
-                <form id="formMovimentacao" onsubmit="salvarMovimentacaoAvulsa(event)" class="space-y-4">
+                <form id="formMovimentacao" onsubmit="salvarMovimentacaoAvulsa(event)" class="space-y-3">
                     <div>
-                        <label class="block text-xs text-zinc-400 mb-1">Selecione o Produto</label>
-                        <select id="movProduto" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm focus:outline-none focus:border-pink-500" required>
-                            <!-- Opções via JS -->
-                        </select>
+                        <label class="block text-[10px] text-zinc-400 mb-1">Produto</label>
+                        <select id="movProduto" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-pink-500" required></select>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs text-zinc-400 mb-1">Tipo de Movimento</label>
-                            <select id="movTipo" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm focus:outline-none focus:border-pink-500">
-                                <option value="entrada">Entrada (Reposição/Compra)</option>
-                                <option value="saida">Saída (Venda Avulsa)</option>
+                            <label class="block text-[10px] text-zinc-400 mb-1">Tipo</label>
+                            <select id="movTipo" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs focus:outline-none">
+                                <option value="entrada">Entrada (Reposição)</option>
+                                <option value="saida">Saída (Venda)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs text-zinc-400 mb-1">Quantidade</label>
-                            <input type="number" id="movQtd" min="1" value="1" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm focus:outline-none focus:border-pink-500" required>
+                            <label class="block text-[10px] text-zinc-400 mb-1">Quantidade</label>
+                            <input type="number" id="movQtd" min="1" value="1" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs text-zinc-400 mb-1">Observação / Cliente</label>
-                        <input type="text" id="movObs" placeholder="Ex: Venda balcão / Brinde / Reposição fornecedor" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm focus:outline-none focus:border-pink-500">
+                        <label class="block text-[10px] text-zinc-400 mb-1">Observação</label>
+                        <input type="text" id="movObs" placeholder="Ex: Cliente Maria" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs">
                     </div>
-                    <button type="submit" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-pink-600/30">Registrar Movimentação</button>
+                    <button type="submit" class="w-full bg-pink-600 py-3 rounded-xl text-xs font-semibold">Confirmar Lançamento</button>
                 </form>
             </div>
         </div>
 
         <!-- ABA HISTÓRICO -->
         <div id="aba-historico" class="hidden space-y-4">
-            <div class="glass-card rounded-2xl overflow-hidden">
-                <div class="p-4 border-b border-zinc-800 flex justify-between items-center">
-                    <h3 class="font-bold text-sm">Histórico de Transações</h3>
-                    <button onclick="limparHistorico()" class="text-xs text-rose-400 hover:underline">Limpar Histórico</button>
-                </div>
+            <div class="glass-card rounded-2xl overflow-hidden p-4">
+                <h3 class="font-bold text-xs mb-3">Histórico de Movimentações</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-zinc-800 text-xs text-zinc-400 uppercase bg-zinc-900/50">
-                                <th class="p-4">Data/Hora</th>
-                                <th class="p-4">Produto</th>
-                                <th class="p-4">Tipo</th>
-                                <th class="p-4">Qtd</th>
-                                <th class="p-4">Detalhes</th>
+                            <tr class="border-b border-zinc-800 text-[10px] text-zinc-400 uppercase">
+                                <th class="p-2">Data</th>
+                                <th class="p-2">Item</th>
+                                <th class="p-2">Tipo</th>
+                                <th class="p-2">Qtd</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaHistorico" class="divide-y divide-zinc-800/50 text-sm">
-                            <!-- Preenchido via JS -->
+                        <tbody id="tabelaHistorico" class="divide-y divide-zinc-800/50 text-xs">
+                            <!-- JS popula aqui -->
                         </tbody>
                     </table>
                 </div>
@@ -193,15 +162,311 @@
 
     </main>
 
-    <!-- MODAL CADASTRO / EDIÇÃO DE PRODUTO -->
+    <!-- MODAL CADASTRO / EDIÇÃO -->
     <div id="modalProduto" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-lg p-6 rounded-3xl space-y-4 border border-pink-500/20">
+        <div class="glass-card w-full max-w-md p-5 rounded-3xl space-y-3 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
-                <h3 id="modalTitulo" class="text-lg font-bold">Cadastrar Nova Maquiagem</h3>
-                <button onclick="fecharModalProduto()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <h3 id="modalTitulo" class="text-sm font-bold">Cadastrar Maquiagem</h3>
+                <button type="button" onclick="fecharModalProduto()" class="text-zinc-400 p-2"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
-            <form id="formProduto" onsubmit="salvarProduto(event)" class="space-y-4">
+            <form id="formProduto" onsubmit="salvarProduto(event)" class="space-y-3">
                 <input type="hidden" id="prodId">
                 <div>
-                    <label class="block text-xs text-zinc-400 mb-1">Nome do Produto</label>
-                    <input type="text" id="prodNome" placeholder="Ex: Batom Matte
+                    <label class="block text-[10px] text-zinc-400 mb-1">Nome da Maquiagem</label>
+                    <input type="text" id="prodNome" placeholder="Ex: Batom Matte Nude" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] text-zinc-400 mb-1">Categoria</label>
+                        <select id="prodCategoria" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs">
+                            <option value="Batom">Batom</option>
+                            <option value="Base">Base / Corretivo</option>
+                            <option value="Olhos">Olhos / Sombras</option>
+                            <option value="Skincare">Skincare</option>
+                            <option value="Pincéis">Pincéis / Acessórios</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-zinc-400 mb-1">Estoque Mínimo</label>
+                        <input type="number" id="prodMinimo" value="3" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-[10px] text-zinc-400 mb-1">Custo (R$)</label>
+                        <input type="number" step="0.01" id="prodCusto" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-zinc-400 mb-1">Venda (R$)</label>
+                        <input type="number" step="0.01" id="prodVenda" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-zinc-400 mb-1">Estoque</label>
+                        <input type="number" id="prodEstoque" placeholder="10" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-zinc-400 mb-1">Foto do Produto</label>
+                    <input type="file" accept="image/*" onchange="converterImagem(this)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2 text-[10px] text-zinc-400">
+                    <input type="hidden" id="prodFoto">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="fecharModalProduto()" class="px-4 py-2 rounded-xl text-xs bg-zinc-800 text-zinc-300">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-pink-600 text-white">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL VENDA RÁPIDA -->
+    <div id="modalVendaRapida" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-5 rounded-3xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold flex items-center space-x-2">
+                    <i class="fa-solid fa-cash-register text-pink-400"></i>
+                    <span>Venda Rápida</span>
+                </h3>
+                <button type="button" onclick="fecharVendaRapida()" class="text-zinc-400 p-2"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[10px] text-zinc-400 mb-1">Selecionar Maquiagem</label>
+                    <select id="vendaRapidaProd" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs focus:outline-none"></select>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-zinc-400 mb-1">Qtd Vendida</label>
+                    <input type="number" id="vendaRapidaQtd" min="1" value="1" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs">
+                </div>
+                <button type="button" onclick="confirmarVendaRapida()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl text-xs">Baixar no Estoque</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let produtos = JSON.parse(localStorage.getItem('beauty_produtos')) || [
+            { id: 1, nome: 'Batom Matte Nude', categoria: 'Batom', custo: 15.00, venda: 39.90, estoque: 10, minimo: 3, foto: '' }
+        ];
+        let historico = JSON.parse(localStorage.getItem('beauty_historico')) || [];
+
+        function salvarDados() {
+            localStorage.setItem('beauty_produtos', JSON.stringify(produtos));
+            localStorage.setItem('beauty_historico', JSON.stringify(historico));
+            atualizarDashboard();
+            renderizarTabela();
+            popularSelects();
+        }
+
+        function mudarAba(aba) {
+            document.getElementById('aba-catalogo').classList.add('hidden');
+            document.getElementById('aba-movimentacoes').classList.add('hidden');
+            document.getElementById('aba-historico').classList.add('hidden');
+
+            document.getElementById('btn-catalogo').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400";
+            document.getElementById('btn-movimentacoes').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400";
+            document.getElementById('btn-historico').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400";
+
+            document.getElementById('aba-' + aba).classList.remove('hidden');
+            document.getElementById('btn-' + aba).className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-pink-600 text-white";
+            
+            if(aba === 'historico') renderizarHistorico();
+        }
+
+        function atualizarDashboard() {
+            document.getElementById('statTotalProdutos').innerText = produtos.length;
+            document.getElementById('statEstoqueBaixo').innerText = produtos.filter(p => p.estoque <= p.minimo).length;
+            
+            let custo = produtos.reduce((acc, p) => acc + (p.custo * p.estoque), 0);
+            let venda = produtos.reduce((acc, p) => acc + (p.venda * p.estoque), 0);
+            
+            document.getElementById('statValorCusto').innerText = `R$ ${custo.toFixed(2)}`;
+            document.getElementById('statValorVenda').innerText = `R$ ${venda.toFixed(2)}`;
+        }
+
+        function renderizarTabela() {
+            const termo = (document.getElementById('filtroBusca').value || '').toLowerCase();
+            const tbody = document.getElementById('tabelaProdutos');
+            tbody.innerHTML = '';
+
+            const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo) || p.categoria.toLowerCase().includes(termo));
+
+            if(filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-zinc-500">Nenhum produto cadastrado.</td></tr>`;
+                return;
+            }
+
+            filtrados.forEach(p => {
+                let imgHtml = p.foto ? `<img src="${p.foto}" class="w-8 h-8 rounded-lg object-cover">` : `<div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-pink-400 text-xs"><i class="fa-solid fa-wand-magic-sparkles"></i></div>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-zinc-900/40">
+                        <td class="p-3 flex items-center space-x-2">
+                            ${imgHtml}
+                            <span class="font-medium text-zinc-200">${p.nome}</span>
+                        </td>
+                        <td class="p-3 text-zinc-200">R$ ${Number(p.venda).toFixed(2)}</td>
+                        <td class="p-3 font-bold ${p.estoque <= p.minimo ? 'text-rose-400' : 'text-zinc-100'}">${p.estoque}</td>
+                        <td class="p-3 text-right space-x-3">
+                            <button type="button" onclick="editarProduto(${p.id})" class="text-zinc-400 hover:text-pink-400 p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="excluirProduto(${p.id})" class="text-zinc-400 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function popularSelects() {
+            const selectMov = document.getElementById('movProduto');
+            const selectVenda = document.getElementById('vendaRapidaProd');
+            selectMov.innerHTML = '';
+            selectVenda.innerHTML = '';
+
+            produtos.forEach(p => {
+                selectMov.innerHTML += `<option value="${p.id}">${p.nome} (${p.estoque} un)</option>`;
+                selectVenda.innerHTML += `<option value="${p.id}">${p.nome} - R$ ${Number(p.venda).toFixed(2)}</option>`;
+            });
+        }
+
+        function converterImagem(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('prodFoto').value = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function abrirModalProduto(id = null) {
+            document.getElementById('modalProduto').classList.remove('hidden');
+            if(id) {
+                document.getElementById('modalTitulo').innerText = "Editar Maquiagem";
+                const p = produtos.find(item => item.id === id);
+                document.getElementById('prodId').value = p.id;
+                document.getElementById('prodNome').value = p.nome;
+                document.getElementById('prodCategoria').value = p.categoria;
+                document.getElementById('prodMinimo').value = p.minimo;
+                document.getElementById('prodCusto').value = p.custo;
+                document.getElementById('prodVenda').value = p.venda;
+                document.getElementById('prodEstoque').value = p.estoque;
+                document.getElementById('prodFoto').value = p.foto || '';
+            } else {
+                document.getElementById('modalTitulo').innerText = "Cadastrar Maquiagem";
+                document.getElementById('formProduto').reset();
+                document.getElementById('prodId').value = '';
+                document.getElementById('prodFoto').value = '';
+            }
+        }
+
+        function fecharModalProduto() {
+            document.getElementById('modalProduto').classList.add('hidden');
+        }
+
+        function salvarProduto(e) {
+            e.preventDefault();
+            const id = document.getElementById('prodId').value;
+            const produtoObj = {
+                id: id ? Number(id) : Date.now(),
+                nome: document.getElementById('prodNome').value,
+                categoria: document.getElementById('prodCategoria').value,
+                minimo: Number(document.getElementById('prodMinimo').value),
+                custo: Number(document.getElementById('prodCusto').value),
+                venda: Number(document.getElementById('prodVenda').value),
+                estoque: Number(document.getElementById('prodEstoque').value),
+                foto: document.getElementById('prodFoto').value
+            };
+
+            if(id) {
+                const index = produtos.findIndex(p => p.id === Number(id));
+                produtos[index] = produtoObj;
+            } else {
+                produtos.push(produtoObj);
+            }
+
+            salvarDados();
+            fecharModalProduto();
+        }
+
+        function editarProduto(id) { abrirModalProduto(id); }
+
+        function excluirProduto(id) {
+            if(confirm('Excluir este produto?')) {
+                produtos = produtos.filter(p => p.id !== id);
+                salvarDados();
+            }
+        }
+
+        function abrirVendaRapida() { document.getElementById('modalVendaRapida').classList.remove('hidden'); }
+        function fecharVendaRapida() { document.getElementById('modalVendaRapida').classList.add('hidden'); }
+
+        function confirmarVendaRapida() {
+            const prodId = Number(document.getElementById('vendaRapidaProd').value);
+            const qtd = Number(document.getElementById('vendaRapidaQtd').value);
+            const produto = produtos.find(p => p.id === prodId);
+
+            if(!produto || produto.estoque < qtd) {
+                alert('Estoque insuficiente!');
+                return;
+            }
+
+            produto.estoque -= qtd;
+            historico.unshift({
+                data: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                produto: produto.nome,
+                tipo: 'Saída',
+                qtd: qtd
+            });
+
+            salvarDados();
+            fecharVendaRapida();
+        }
+
+        function salvarMovimentacaoAvulsa(e) {
+            e.preventDefault();
+            const prodId = Number(document.getElementById('movProduto').value);
+            const tipo = document.getElementById('movTipo').value;
+            const qtd = Number(document.getElementById('movQtd').value);
+            const produto = produtos.find(p => p.id === prodId);
+
+            if(!produto) return;
+
+            if(tipo === 'entrada') {
+                produto.estoque += qtd;
+            } else {
+                if(produto.estoque < qtd) {
+                    alert('Estoque insuficiente!');
+                    return;
+                }
+                produto.estoque -= qtd;
+            }
+
+            historico.unshift({
+                data: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                produto: produto.nome,
+                tipo: tipo === 'entrada' ? 'Entrada' : 'Saída',
+                qtd: qtd
+            });
+
+            salvarDados();
+            mudarAba('catalogo');
+        }
+
+        function renderizarHistorico() {
+            const tbody = document.getElementById('tabelaHistorico');
+            tbody.innerHTML = '';
+            historico.forEach(h => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2 text-zinc-400">${h.data}</td>
+                        <td class="p-2 font-medium text-zinc-200">${h.produto}</td>
+                        <td class="p-2">${h.tipo}</td>
+                        <td class="p-2 font-bold">${h.qtd} un</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Inicializar
+        salvarDados();
+    </script>
+</body>
+</html>
