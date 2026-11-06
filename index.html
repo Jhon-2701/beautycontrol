@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> Controle de estoque - Gestão de Maquiagens</title>
+    <title>BeautyControl Pro - Gestão de Maquilhagem</title>
     
     <!-- Configuração de PWA e Ícone -->
     <link rel="icon" type="image/png" href="icon.png">
@@ -33,7 +33,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-base bg-gradient-to-r from-pink-300 via-rose-300 to-amber-300 bg-clip-text text-transparent">BeautyControl</h1>
-                <p class="text-[10px] text-zinc-400">Estoque de Maquiagens</p>
+                <p class="text-[10px] text-zinc-400">Nuvem Firebase Ativa <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 ml-1 animate-pulse"></span></p>
             </div>
         </div>
         <button type="button" onclick="abrirVendaRapida()" class="bg-pink-600 active:bg-pink-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-lg shadow-pink-600/30">
@@ -77,11 +77,11 @@
             <div class="flex flex-col gap-3">
                 <div class="relative w-full">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-zinc-500 text-xs"></i>
-                    <input type="text" id="filtroBusca" oninput="renderizarTabela()" placeholder="Buscar maquiagem..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-pink-500">
+                    <input type="text" id="filtroBusca" oninput="renderizarTabela()" placeholder="Buscar maquilhagem..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-pink-500">
                 </div>
                 <button type="button" onclick="abrirModalProduto()" class="w-full bg-zinc-800 active:bg-zinc-700 text-zinc-100 border border-pink-500/30 py-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-plus text-pink-400"></i>
-                    <span>Cadastrar Nova Maquiagem</span>
+                    <span>Cadastrar Nova Maquilhagem</span>
                 </button>
             </div>
 
@@ -97,7 +97,7 @@
                             </tr>
                         </thead>
                         <tbody id="tabelaProdutos" class="divide-y divide-zinc-800/50 text-xs">
-                            <!-- JS popula aqui -->
+                            <tr><td colspan="4" class="p-4 text-center text-zinc-500">A carregar dados do Firebase...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -166,13 +166,13 @@
     <div id="modalProduto" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-5 rounded-3xl space-y-3 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
-                <h3 id="modalTitulo" class="text-sm font-bold">Cadastrar Maquiagem</h3>
+                <h3 id="modalTitulo" class="text-sm font-bold">Cadastrar Maquilhagem</h3>
                 <button type="button" onclick="fecharModalProduto()" class="text-zinc-400 p-2"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
             <form id="formProduto" onsubmit="salvarProduto(event)" class="space-y-3">
                 <input type="hidden" id="prodId">
                 <div>
-                    <label class="block text-[10px] text-zinc-400 mb-1">Nome da Maquiagem</label>
+                    <label class="block text-[10px] text-zinc-400 mb-1">Nome da Maquilhagem</label>
                     <input type="text" id="prodNome" placeholder="Ex: Batom Matte Nude" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -230,7 +230,7 @@
             </div>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[10px] text-zinc-400 mb-1">Selecionar Maquiagem</label>
+                    <label class="block text-[10px] text-zinc-400 mb-1">Selecionar Maquilhagem</label>
                     <select id="vendaRapidaProd" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs focus:outline-none"></select>
                 </div>
                 <div>
@@ -242,20 +242,74 @@
         </div>
     </div>
 
-    <script>
-        let produtos = JSON.parse(localStorage.getItem('beauty_produtos')) || [
-            { id: 1, nome: 'Batom Matte Nude', categoria: 'Batom', custo: 15.00, venda: 39.90, estoque: 10, minimo: 3, foto: '' }
-        ];
-        let historico = JSON.parse(localStorage.getItem('beauty_historico')) || [];
+    <!-- FIREBASE SDK CONFIGURATION -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            deleteDoc, 
+            onSnapshot, 
+            addDoc,
+            query,
+            orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        function salvarDados() {
-            localStorage.setItem('beauty_produtos', JSON.stringify(produtos));
-            localStorage.setItem('beauty_historico', JSON.stringify(historico));
+        // Credenciais extraídas da imagem enviada
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXMxC6ql9jjbFlTb76vF__47ZPGjfcNYQ",
+            authDomain: "beautycontrol-74850.firebaseapp.com",
+            projectId: "beautycontrol-74850",
+            storageBucket: "beautycontrol-74850.firebasestorage.app",
+            messagingSenderId: "518113500152",
+            appId: "1:518113500152:web:8c0847f8800092833a940d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.produtos = [];
+        window.historico = [];
+
+        // Escuta em tempo real da coleção 'produtos'
+        onSnapshot(collection(db, "produtos"), (snapshot) => {
+            window.produtos = [];
+            snapshot.forEach((doc) => {
+                window.produtos.push({ id: doc.id, ...doc.data() });
+            });
             atualizarDashboard();
             renderizarTabela();
             popularSelects();
-        }
+        });
 
+        // Escuta em tempo real da coleção 'historico'
+        onSnapshot(query(collection(db, "historico"), orderBy("timestamp", "desc")), (snapshot) => {
+            window.historico = [];
+            snapshot.forEach((doc) => {
+                window.historico.push({ id: doc.id, ...doc.data() });
+            });
+            renderizarHistorico();
+        });
+
+        window.salvarProdutoFirebase = async function(produtoObj) {
+            const docId = produtoObj.id ? String(produtoObj.id) : String(Date.now());
+            produtoObj.id = docId;
+            await setDoc(doc(db, "produtos", docId), produtoObj);
+        };
+
+        window.excluirProdutoFirebase = async function(id) {
+            await deleteDoc(doc(db, "produtos", String(id)));
+        };
+
+        window.registrarHistoricoFirebase = async function(item) {
+            item.timestamp = new Date().getTime();
+            await addDoc(collection(db, "historico"), item);
+        };
+    </script>
+
+    <script>
         function mudarAba(aba) {
             document.getElementById('aba-catalogo').classList.add('hidden');
             document.getElementById('aba-movimentacoes').classList.add('hidden');
@@ -272,11 +326,11 @@
         }
 
         function atualizarDashboard() {
-            document.getElementById('statTotalProdutos').innerText = produtos.length;
-            document.getElementById('statEstoqueBaixo').innerText = produtos.filter(p => p.estoque <= p.minimo).length;
+            document.getElementById('statTotalProdutos').innerText = window.produtos.length;
+            document.getElementById('statEstoqueBaixo').innerText = window.produtos.filter(p => p.estoque <= p.minimo).length;
             
-            let custo = produtos.reduce((acc, p) => acc + (p.custo * p.estoque), 0);
-            let venda = produtos.reduce((acc, p) => acc + (p.venda * p.estoque), 0);
+            let custo = window.produtos.reduce((acc, p) => acc + (p.custo * p.estoque), 0);
+            let venda = window.produtos.reduce((acc, p) => acc + (p.venda * p.estoque), 0);
             
             document.getElementById('statValorCusto').innerText = `R$ ${custo.toFixed(2)}`;
             document.getElementById('statValorVenda').innerText = `R$ ${venda.toFixed(2)}`;
@@ -287,7 +341,7 @@
             const tbody = document.getElementById('tabelaProdutos');
             tbody.innerHTML = '';
 
-            const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo) || p.categoria.toLowerCase().includes(termo));
+            const filtrados = (window.produtos || []).filter(p => p.nome.toLowerCase().includes(termo) || p.categoria.toLowerCase().includes(termo));
 
             if(filtrados.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-zinc-500">Nenhum produto cadastrado.</td></tr>`;
@@ -306,8 +360,8 @@
                         <td class="p-3 text-zinc-200">R$ ${Number(p.venda).toFixed(2)}</td>
                         <td class="p-3 font-bold ${p.estoque <= p.minimo ? 'text-rose-400' : 'text-zinc-100'}">${p.estoque}</td>
                         <td class="p-3 text-right space-x-3">
-                            <button type="button" onclick="editarProduto(${p.id})" class="text-zinc-400 hover:text-pink-400 p-1"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="excluirProduto(${p.id})" class="text-zinc-400 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="editarProduto('${p.id}')" class="text-zinc-400 hover:text-pink-400 p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="excluirProduto('${p.id}')" class="text-zinc-400 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -320,7 +374,7 @@
             selectMov.innerHTML = '';
             selectVenda.innerHTML = '';
 
-            produtos.forEach(p => {
+            (window.produtos || []).forEach(p => {
                 selectMov.innerHTML += `<option value="${p.id}">${p.nome} (${p.estoque} un)</option>`;
                 selectVenda.innerHTML += `<option value="${p.id}">${p.nome} - R$ ${Number(p.venda).toFixed(2)}</option>`;
             });
@@ -339,8 +393,8 @@
         function abrirModalProduto(id = null) {
             document.getElementById('modalProduto').classList.remove('hidden');
             if(id) {
-                document.getElementById('modalTitulo').innerText = "Editar Maquiagem";
-                const p = produtos.find(item => item.id === id);
+                document.getElementById('modalTitulo').innerText = "Editar Maquilhagem";
+                const p = window.produtos.find(item => String(item.id) === String(id));
                 document.getElementById('prodId').value = p.id;
                 document.getElementById('prodNome').value = p.nome;
                 document.getElementById('prodCategoria').value = p.categoria;
@@ -350,7 +404,7 @@
                 document.getElementById('prodEstoque').value = p.estoque;
                 document.getElementById('prodFoto').value = p.foto || '';
             } else {
-                document.getElementById('modalTitulo').innerText = "Cadastrar Maquiagem";
+                document.getElementById('modalTitulo').innerText = "Cadastrar Maquilhagem";
                 document.getElementById('formProduto').reset();
                 document.getElementById('prodId').value = '';
                 document.getElementById('prodFoto').value = '';
@@ -361,11 +415,11 @@
             document.getElementById('modalProduto').classList.add('hidden');
         }
 
-        function salvarProduto(e) {
+        async function salvarProduto(e) {
             e.preventDefault();
             const id = document.getElementById('prodId').value;
             const produtoObj = {
-                id: id ? Number(id) : Date.now(),
+                id: id || null,
                 nome: document.getElementById('prodNome').value,
                 categoria: document.getElementById('prodCategoria').value,
                 minimo: Number(document.getElementById('prodMinimo').value),
@@ -375,33 +429,25 @@
                 foto: document.getElementById('prodFoto').value
             };
 
-            if(id) {
-                const index = produtos.findIndex(p => p.id === Number(id));
-                produtos[index] = produtoObj;
-            } else {
-                produtos.push(produtoObj);
-            }
-
-            salvarDados();
+            await window.salvarProdutoFirebase(produtoObj);
             fecharModalProduto();
         }
 
         function editarProduto(id) { abrirModalProduto(id); }
 
-        function excluirProduto(id) {
-            if(confirm('Excluir este produto?')) {
-                produtos = produtos.filter(p => p.id !== id);
-                salvarDados();
+        async function excluirProduto(id) {
+            if(confirm('Excluir este produto da nuvem?')) {
+                await window.excluirProdutoFirebase(id);
             }
         }
 
         function abrirVendaRapida() { document.getElementById('modalVendaRapida').classList.remove('hidden'); }
         function fecharVendaRapida() { document.getElementById('modalVendaRapida').classList.add('hidden'); }
 
-        function confirmarVendaRapida() {
-            const prodId = Number(document.getElementById('vendaRapidaProd').value);
+        async function confirmarVendaRapida() {
+            const prodId = document.getElementById('vendaRapidaProd').value;
             const qtd = Number(document.getElementById('vendaRapidaQtd').value);
-            const produto = produtos.find(p => p.id === prodId);
+            const produto = window.produtos.find(p => String(p.id) === String(prodId));
 
             if(!produto || produto.estoque < qtd) {
                 alert('Estoque insuficiente!');
@@ -409,23 +455,23 @@
             }
 
             produto.estoque -= qtd;
-            historico.unshift({
+            await window.salvarProdutoFirebase(produto);
+            await window.registrarHistoricoFirebase({
                 data: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 produto: produto.nome,
                 tipo: 'Saída',
                 qtd: qtd
             });
 
-            salvarDados();
             fecharVendaRapida();
         }
 
-        function salvarMovimentacaoAvulsa(e) {
+        async function salvarMovimentacaoAvulsa(e) {
             e.preventDefault();
-            const prodId = Number(document.getElementById('movProduto').value);
+            const prodId = document.getElementById('movProduto').value;
             const tipo = document.getElementById('movTipo').value;
             const qtd = Number(document.getElementById('movQtd').value);
-            const produto = produtos.find(p => p.id === prodId);
+            const produto = window.produtos.find(p => String(p.id) === String(prodId));
 
             if(!produto) return;
 
@@ -439,21 +485,21 @@
                 produto.estoque -= qtd;
             }
 
-            historico.unshift({
+            await window.salvarProdutoFirebase(produto);
+            await window.registrarHistoricoFirebase({
                 data: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 produto: produto.nome,
                 tipo: tipo === 'entrada' ? 'Entrada' : 'Saída',
                 qtd: qtd
             });
 
-            salvarDados();
             mudarAba('catalogo');
         }
 
         function renderizarHistorico() {
             const tbody = document.getElementById('tabelaHistorico');
             tbody.innerHTML = '';
-            historico.forEach(h => {
+            (window.historico || []).forEach(h => {
                 tbody.innerHTML += `
                     <tr>
                         <td class="p-2 text-zinc-400">${h.data}</td>
@@ -464,9 +510,6 @@
                 `;
             });
         }
-
-        // Inicializar
-        salvarDados();
     </script>
 </body>
 </html>
