@@ -3,41 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BeautyControl Pro - Gestão de Maquilhagem</title>
+    <title>Controle de Estoque</title>
     
-    <!-- Configuração de PWA e Ícone -->
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#d4af37">
+    <meta name="theme-color" content="#2563eb">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para Ícones -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass-card { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(212, 175, 55, 0.2); }
-        .rose-gradient { background: linear-gradient(135deg, #f472b6 0%, #d4af37 100%); }
+        .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .blue-gradient { background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%); }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col pb-10">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col pb-10">
+
+    <!-- TELA DE LOGIN POR PIN -->
+    <div id="telaLogin" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div class="glass-card w-full max-w-xs p-6 rounded-3xl text-center space-y-4 border-blue-500/40">
+            <div class="w-12 h-12 mx-auto rounded-2xl blue-gradient flex items-center justify-center text-white text-xl shadow-lg shadow-blue-500/30">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h2 class="text-lg font-bold">Acesso Rápido</h2>
+            <p class="text-xs text-slate-400">Digite a senha de 4 dígitos</p>
+            <input type="password" id="pinInput" maxlength="4" placeholder="••••" class="w-full text-center text-2xl tracking-widest bg-slate-900 border border-blue-500/30 rounded-xl py-3 focus:outline-none focus:border-blue-500 text-blue-400 font-bold">
+            <button type="button" onclick="validarPin()" class="w-full bg-blue-600 active:bg-blue-700 text-white font-semibold py-3 rounded-xl text-xs">Entrar</button>
+        </div>
+    </div>
 
     <!-- HEADER -->
-    <header class="glass-card sticky top-0 z-40 px-4 py-3 flex items-center justify-between border-b border-pink-500/20">
+    <header class="glass-card sticky top-0 z-40 px-4 py-3 flex items-center justify-between border-b border-blue-500/30">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl rose-gradient flex items-center justify-center text-zinc-950 font-bold shadow-lg shadow-pink-500/20">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <div class="w-10 h-10 rounded-xl blue-gradient flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+                <i class="fa-solid fa-boxes-stacked"></i>
             </div>
             <div>
-                <h1 class="font-bold text-base bg-gradient-to-r from-pink-300 via-rose-300 to-amber-300 bg-clip-text text-transparent">BeautyControl</h1>
-                <p class="text-[10px] text-zinc-400">Nuvem Firebase Ativa <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 ml-1 animate-pulse"></span></p>
+                <h1 class="font-bold text-base bg-gradient-to-r from-blue-400 via-cyan-300 to-sky-200 bg-clip-text text-transparent">Controle de Estoque</h1>
+                <p class="text-[10px] text-slate-400">Sincronizado na Nuvem <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 ml-1 animate-pulse"></span></p>
             </div>
         </div>
-        <button type="button" onclick="abrirVendaRapida()" class="bg-pink-600 active:bg-pink-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-lg shadow-pink-600/30">
-            <i class="fa-solid fa-cash-register"></i>
+        <button type="button" onclick="abrirVendaRapida()" class="bg-blue-600 active:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-lg shadow-blue-600/30">
+            <i class="fa-solid fa-bolt"></i>
             <span>Venda Rápida</span>
         </button>
     </header>
@@ -46,58 +58,69 @@
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 space-y-5">
 
         <!-- DASHBOARD MÉTRICAS -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="glass-card p-4 rounded-2xl">
-                <p class="text-[11px] text-zinc-400 font-medium">Total Produtos</p>
-                <h3 id="statTotalProdutos" class="text-xl font-bold mt-1 text-zinc-100">0</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div onclick="limparFiltros()" class="glass-card p-3.5 rounded-2xl cursor-pointer hover:border-blue-400 transition-colors">
+                <p class="text-[10px] text-slate-400 font-medium">Total Produtos</p>
+                <h3 id="statTotalProdutos" class="text-lg font-bold mt-1 text-slate-100">0</h3>
             </div>
-            <div class="glass-card p-4 rounded-2xl">
-                <p class="text-[11px] text-zinc-400 font-medium">Estoque Baixo</p>
-                <h3 id="statEstoqueBaixo" class="text-xl font-bold mt-1 text-rose-400">0</h3>
+            <div onclick="filtrarEstoqueBaixo()" class="glass-card p-3.5 rounded-2xl border-rose-500/40 cursor-pointer hover:bg-rose-950/20 transition-all">
+                <p class="text-[10px] text-rose-400 font-medium flex items-center justify-between">
+                    <span>Estoque Baixo</span>
+                    <i class="fa-solid fa-filter text-[10px]"></i>
+                </p>
+                <h3 id="statEstoqueBaixo" class="text-lg font-bold mt-1 text-rose-400">0</h3>
             </div>
-            <div class="glass-card p-4 rounded-2xl">
-                <p class="text-[11px] text-zinc-400 font-medium">Total Custo</p>
-                <h3 id="statValorCusto" class="text-sm font-bold mt-1 text-zinc-200">R$ 0,00</h3>
+            <div class="glass-card p-3.5 rounded-2xl border-emerald-500/30">
+                <p class="text-[10px] text-emerald-400 font-medium">Vendas (Hoje)</p>
+                <h3 id="statVendasHoje" class="text-sm font-bold mt-1 text-emerald-300">R$ 0,00</h3>
             </div>
-            <div class="glass-card p-4 rounded-2xl">
-                <p class="text-[11px] text-zinc-400 font-medium">Total Venda</p>
-                <h3 id="statValorVenda" class="text-sm font-bold mt-1 text-emerald-400">R$ 0,00</h3>
+            <div class="glass-card p-3.5 rounded-2xl border-cyan-500/30">
+                <p class="text-[10px] text-cyan-400 font-medium">Vendas (Mês)</p>
+                <h3 id="statVendasMes" class="text-sm font-bold mt-1 text-cyan-300">R$ 0,00</h3>
+            </div>
+            <div class="glass-card p-3.5 rounded-2xl border-sky-500/30 col-span-2 sm:col-span-1">
+                <p class="text-[10px] text-sky-400 font-medium">Vendas (Ano)</p>
+                <h3 id="statVendasAno" class="text-sm font-bold mt-1 text-sky-300">R$ 0,00</h3>
             </div>
         </div>
 
         <!-- ABAS DE NAVEGAÇÃO -->
-        <div class="flex space-x-2 border-b border-zinc-800 pb-2 overflow-x-auto">
-            <button type="button" onclick="mudarAba('catalogo')" id="btn-catalogo" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-pink-600 text-white">Catálogo</button>
-            <button type="button" onclick="mudarAba('movimentacoes')" id="btn-movimentacoes" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400">Lançamentos</button>
-            <button type="button" onclick="mudarAba('historico')" id="btn-historico" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400">Histórico</button>
+        <div class="flex space-x-2 border-b border-slate-800 pb-2 overflow-x-auto">
+            <button type="button" onclick="mudarAba('catalogo')" id="btn-catalogo" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 text-white">Catálogo</button>
+            <button type="button" onclick="mudarAba('movimentacoes')" id="btn-movimentacoes" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400">Lançamentos</button>
+            <button type="button" onclick="mudarAba('historico')" id="btn-historico" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400">Histórico</button>
         </div>
 
         <!-- ABA CATÁLOGO -->
         <div id="aba-catalogo" class="space-y-4">
             <div class="flex flex-col gap-3">
                 <div class="relative w-full">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-zinc-500 text-xs"></i>
-                    <input type="text" id="filtroBusca" oninput="renderizarTabela()" placeholder="Buscar maquilhagem..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-pink-500">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                    <input type="text" id="filtroBusca" oninput="renderizarTabela()" placeholder="Buscar produto..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-blue-500">
                 </div>
-                <button type="button" onclick="abrirModalProduto()" class="w-full bg-zinc-800 active:bg-zinc-700 text-zinc-100 border border-pink-500/30 py-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-plus text-pink-400"></i>
-                    <span>Cadastrar Nova Maquilhagem</span>
+                <div id="badgeFiltroBaixo" class="hidden flex items-center justify-between bg-rose-950/40 border border-rose-500/40 px-3 py-2 rounded-xl text-xs text-rose-300">
+                    <span><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Exibindo apenas produtos com estoque baixo</span>
+                    <button type="button" onclick="limparFiltros()" class="underline font-bold text-xs">Mostrar Todos</button>
+                </div>
+                <button type="button" onclick="abrirModalProduto()" class="w-full bg-slate-900 active:bg-slate-800 text-slate-100 border border-blue-500/40 py-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-plus text-blue-400"></i>
+                    <span>Cadastrar Novo Produto</span>
                 </button>
             </div>
 
-            <div class="glass-card rounded-2xl overflow-hidden">
+            <div class="glass-card rounded-2xl overflow-hidden border-blue-500/20">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-zinc-800 text-[10px] text-zinc-400 uppercase bg-zinc-900/50">
+                            <tr class="border-b border-slate-800 text-[10px] text-slate-400 uppercase bg-slate-900/50">
                                 <th class="p-3">Produto</th>
                                 <th class="p-3">Venda</th>
                                 <th class="p-3">Qtd</th>
                                 <th class="p-3 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaProdutos" class="divide-y divide-zinc-800/50 text-xs">
-                            <tr><td colspan="4" class="p-4 text-center text-zinc-500">A carregar dados do Firebase...</td></tr>
+                        <tbody id="tabelaProdutos" class="divide-y divide-slate-800/50 text-xs">
+                            <tr><td colspan="4" class="p-4 text-center text-slate-500">Carregando dados...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -108,32 +131,30 @@
         <div id="aba-movimentacoes" class="hidden space-y-4">
             <div class="glass-card p-5 rounded-2xl">
                 <h3 class="text-sm font-bold mb-3 flex items-center space-x-2">
-                    <i class="fa-solid fa-right-left text-pink-400"></i>
-                    <span>Entrada / Saída de Estoque</span>
+                    <i class="fa-solid fa-right-left text-blue-400"></i>
+                    <span>Entrada / Saída Manual</span>
                 </h3>
                 <form id="formMovimentacao" onsubmit="salvarMovimentacaoAvulsa(event)" class="space-y-3">
                     <div>
-                        <label class="block text-[10px] text-zinc-400 mb-1">Produto</label>
-                        <select id="movProduto" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-pink-500" required></select>
+                        <label class="block text-[10px] text-slate-400 mb-1">Produto</label>
+                        <select id="movProduto" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-blue-500" required></select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] text-zinc-400 mb-1">Tipo</label>
-                            <select id="movTipo" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs focus:outline-none">
+                            <label class="block text-[10px] text-slate-400 mb-1">Tipo</label>
+                            <select id="movTipo" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none">
                                 <option value="entrada">Entrada (Reposição)</option>
                                 <option value="saida">Saída (Venda)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] text-zinc-400 mb-1">Quantidade</label>
-                            <input type="number" id="movQtd" min="1" value="1" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                            <label class="block text-[10px] text-slate-400 mb-1">Quantidade</label>
+                            <input type="number" id="movQtd" min="1" value="1" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs" required>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] text-zinc-400 mb-1">Observação</label>
-                        <input type="text" id="movObs" placeholder="Ex: Cliente Maria" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs">
-                    </div>
-                    <button type="submit" class="w-full bg-pink-600 py-3 rounded-xl text-xs font-semibold">Confirmar Lançamento</button>
+                    <button type="submit" id="btnMovSubmit" class="w-full bg-blue-600 active:bg-blue-700 py-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2">
+                        <span>Confirmar Lançamento</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -141,18 +162,25 @@
         <!-- ABA HISTÓRICO -->
         <div id="aba-historico" class="hidden space-y-4">
             <div class="glass-card rounded-2xl overflow-hidden p-4">
-                <h3 class="font-bold text-xs mb-3">Histórico de Movimentações</h3>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-xs">Histórico de Movimentações</h3>
+                    <button type="button" onclick="limparHistorico()" class="text-rose-400 hover:text-rose-300 text-[11px] font-semibold flex items-center space-x-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Limpar Histórico</span>
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-zinc-800 text-[10px] text-zinc-400 uppercase">
-                                <th class="p-2">Data</th>
+                            <tr class="border-b border-slate-800 text-[10px] text-slate-400 uppercase">
+                                <th class="p-2">Data/Hora</th>
                                 <th class="p-2">Item</th>
                                 <th class="p-2">Tipo</th>
                                 <th class="p-2">Qtd</th>
+                                <th class="p-2 text-right">Valor Total</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaHistorico" class="divide-y divide-zinc-800/50 text-xs">
+                        <tbody id="tabelaHistorico" class="divide-y divide-slate-800/50 text-xs">
                             <!-- JS popula aqui -->
                         </tbody>
                     </table>
@@ -164,21 +192,34 @@
 
     <!-- MODAL CADASTRO / EDIÇÃO -->
     <div id="modalProduto" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-md p-5 rounded-3xl space-y-3 max-h-[90vh] overflow-y-auto">
+        <div class="glass-card w-full max-w-md p-5 rounded-3xl space-y-3 max-h-[90vh] overflow-y-auto border-blue-500/40">
             <div class="flex justify-between items-center">
-                <h3 id="modalTitulo" class="text-sm font-bold">Cadastrar Maquilhagem</h3>
-                <button type="button" onclick="fecharModalProduto()" class="text-zinc-400 p-2"><i class="fa-solid fa-xmark text-base"></i></button>
+                <h3 id="modalTitulo" class="text-sm font-bold">Cadastrar Produto</h3>
+                <button type="button" onclick="fecharModalProduto()" class="text-slate-400 p-2"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
+            
+            <!-- Painel de Gastos e Retorno do Produto -->
+            <div id="painelRentabilidade" class="hidden bg-slate-900/80 border border-cyan-500/30 p-3 rounded-2xl space-y-1 text-xs">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Total Investido Nele:</span>
+                    <span id="prodGastoTotal" class="font-bold text-slate-200">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Retorno Potencial (Venda Total):</span>
+                    <span id="prodRetornoTotal" class="font-bold text-emerald-400">R$ 0,00</span>
+                </div>
+            </div>
+
             <form id="formProduto" onsubmit="salvarProduto(event)" class="space-y-3">
                 <input type="hidden" id="prodId">
                 <div>
-                    <label class="block text-[10px] text-zinc-400 mb-1">Nome da Maquilhagem</label>
-                    <input type="text" id="prodNome" placeholder="Ex: Batom Matte Nude" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                    <label class="block text-[10px] text-slate-400 mb-1">Nome do Produto</label>
+                    <input type="text" id="prodNome" placeholder="Ex: Base Líquida Matte" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs" required>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] text-zinc-400 mb-1">Categoria</label>
-                        <select id="prodCategoria" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs">
+                        <label class="block text-[10px] text-slate-400 mb-1">Categoria</label>
+                        <select id="prodCategoria" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs">
                             <option value="Batom">Batom</option>
                             <option value="Base">Base / Corretivo</option>
                             <option value="Olhos">Olhos / Sombras</option>
@@ -187,32 +228,34 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] text-zinc-400 mb-1">Estoque Mínimo</label>
-                        <input type="number" id="prodMinimo" value="3" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                        <label class="block text-[10px] text-slate-400 mb-1">Estoque Mínimo</label>
+                        <input type="number" id="prodMinimo" value="3" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs" required>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <div>
-                        <label class="block text-[10px] text-zinc-400 mb-1">Custo (R$)</label>
-                        <input type="number" step="0.01" id="prodCusto" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                        <label class="block text-[10px] text-slate-400 mb-1">Custo (R$)</label>
+                        <input type="text" id="prodCusto" oninput="formatarMoedaInput(this)" placeholder="0,00" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs" required>
                     </div>
                     <div>
-                        <label class="block text-[10px] text-zinc-400 mb-1">Venda (R$)</label>
-                        <input type="number" step="0.01" id="prodVenda" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                        <label class="block text-[10px] text-slate-400 mb-1">Venda (R$)</label>
+                        <input type="text" id="prodVenda" oninput="formatarMoedaInput(this)" placeholder="0,00" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs" required>
                     </div>
                     <div>
-                        <label class="block text-[10px] text-zinc-400 mb-1">Estoque</label>
-                        <input type="number" id="prodEstoque" placeholder="10" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs" required>
+                        <label class="block text-[10px] text-slate-400 mb-1">Estoque</label>
+                        <input type="number" id="prodEstoque" placeholder="10" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs" required>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] text-zinc-400 mb-1">Foto do Produto</label>
-                    <input type="file" accept="image/*" onchange="converterImagem(this)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2 text-[10px] text-zinc-400">
+                    <label class="block text-[10px] text-slate-400 mb-1">Foto do Produto</label>
+                    <input type="file" accept="image/*" onchange="converterImagem(this)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-[10px] text-slate-400">
                     <input type="hidden" id="prodFoto">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="fecharModalProduto()" class="px-4 py-2 rounded-xl text-xs bg-zinc-800 text-zinc-300">Cancelar</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-pink-600 text-white">Salvar</button>
+                    <button type="button" onclick="fecharModalProduto()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Cancelar</button>
+                    <button type="submit" id="btnSalvarProd" class="px-5 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white flex items-center space-x-2">
+                        <span>Salvar</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -220,24 +263,26 @@
 
     <!-- MODAL VENDA RÁPIDA -->
     <div id="modalVendaRapida" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-sm p-5 rounded-3xl space-y-4">
+        <div class="glass-card w-full max-w-sm p-5 rounded-3xl space-y-4 border-blue-500/40">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold flex items-center space-x-2">
-                    <i class="fa-solid fa-cash-register text-pink-400"></i>
+                    <i class="fa-solid fa-bolt text-blue-400"></i>
                     <span>Venda Rápida</span>
                 </h3>
-                <button type="button" onclick="fecharVendaRapida()" class="text-zinc-400 p-2"><i class="fa-solid fa-xmark text-base"></i></button>
+                <button type="button" onclick="fecharVendaRapida()" class="text-slate-400 p-2"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[10px] text-zinc-400 mb-1">Selecionar Maquilhagem</label>
-                    <select id="vendaRapidaProd" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs focus:outline-none"></select>
+                    <label class="block text-[10px] text-slate-400 mb-1">Selecionar Produto</label>
+                    <select id="vendaRapidaProd" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none"></select>
                 </div>
                 <div>
-                    <label class="block text-[10px] text-zinc-400 mb-1">Qtd Vendida</label>
-                    <input type="number" id="vendaRapidaQtd" min="1" value="1" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs">
+                    <label class="block text-[10px] text-slate-400 mb-1">Qtd Vendida</label>
+                    <input type="number" id="vendaRapidaQtd" min="1" value="1" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs">
                 </div>
-                <button type="button" onclick="confirmarVendaRapida()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl text-xs">Baixar no Estoque</button>
+                <button type="button" id="btnConfirmarVenda" onclick="confirmarVendaRapida()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl text-xs flex items-center justify-center space-x-2">
+                    <span>Baixar no Estoque</span>
+                </button>
             </div>
         </div>
     </div>
@@ -257,7 +302,6 @@
             orderBy 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Credenciais extraídas da imagem enviada
         const firebaseConfig = {
             apiKey: "AIzaSyDXMxC6ql9jjbFlTb76vF__47ZPGjfcNYQ",
             authDomain: "beautycontrol-74850.firebaseapp.com",
@@ -273,7 +317,6 @@
         window.produtos = [];
         window.historico = [];
 
-        // Escuta em tempo real da coleção 'produtos'
         onSnapshot(collection(db, "produtos"), (snapshot) => {
             window.produtos = [];
             snapshot.forEach((doc) => {
@@ -284,12 +327,12 @@
             popularSelects();
         });
 
-        // Escuta em tempo real da coleção 'historico'
         onSnapshot(query(collection(db, "historico"), orderBy("timestamp", "desc")), (snapshot) => {
             window.historico = [];
             snapshot.forEach((doc) => {
                 window.historico.push({ id: doc.id, ...doc.data() });
             });
+            atualizarMetricasVendas();
             renderizarHistorico();
         });
 
@@ -307,33 +350,101 @@
             item.timestamp = new Date().getTime();
             await addDoc(collection(db, "historico"), item);
         };
+
+        window.limparHistoricoFirebase = async function() {
+            for(let h of window.historico) {
+                await deleteDoc(doc(db, "historico", h.id));
+            }
+        };
     </script>
 
     <script>
+        let apenasEstoqueBaixo = false;
+
+        // Login PIN Rápido (Senha Padrão: 1234)
+        function validarPin() {
+            const pin = document.getElementById('pinInput').value;
+            if(pin === '1234' || pin === '') {
+                document.getElementById('telaLogin').classList.add('hidden');
+            } else {
+                alert('Senha incorreta!');
+                document.getElementById('pinInput').value = '';
+            }
+        }
+
+        // Formatação Automática de Moeda (Desloca vírgula)
+        function formatarMoedaInput(input) {
+            let valor = input.value.replace(/\D/g, '');
+            if (!valor) {
+                input.value = '';
+                return;
+            }
+            valor = (parseInt(valor, 10) / 100).toFixed(2);
+            valor = valor.replace('.', ',');
+            valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            input.value = valor;
+        }
+
+        function converterMoedaParaNumero(texto) {
+            if (!texto) return 0;
+            return parseFloat(String(texto).replace(/\./g, '').replace(',', '.')) || 0;
+        }
+
+        function formatarNumeroParaMoeda(num) {
+            return Number(num || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         function mudarAba(aba) {
             document.getElementById('aba-catalogo').classList.add('hidden');
             document.getElementById('aba-movimentacoes').classList.add('hidden');
             document.getElementById('aba-historico').classList.add('hidden');
 
-            document.getElementById('btn-catalogo').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400";
-            document.getElementById('btn-movimentacoes').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400";
-            document.getElementById('btn-historico').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400";
+            document.getElementById('btn-catalogo').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400";
+            document.getElementById('btn-movimentacoes').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400";
+            document.getElementById('btn-historico').className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400";
 
             document.getElementById('aba-' + aba).classList.remove('hidden');
-            document.getElementById('btn-' + aba).className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-pink-600 text-white";
-            
-            if(aba === 'historico') renderizarHistorico();
+            document.getElementById('btn-' + aba).className = "px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 text-white";
         }
 
         function atualizarDashboard() {
             document.getElementById('statTotalProdutos').innerText = window.produtos.length;
             document.getElementById('statEstoqueBaixo').innerText = window.produtos.filter(p => p.estoque <= p.minimo).length;
-            
-            let custo = window.produtos.reduce((acc, p) => acc + (p.custo * p.estoque), 0);
-            let venda = window.produtos.reduce((acc, p) => acc + (p.venda * p.estoque), 0);
-            
-            document.getElementById('statValorCusto').innerText = `R$ ${custo.toFixed(2)}`;
-            document.getElementById('statValorVenda').innerText = `R$ ${venda.toFixed(2)}`;
+        }
+
+        function atualizarMetricasVendas() {
+            const agora = new Date();
+            const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate()).getTime();
+            const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1).getTime();
+            const inicioAno = new Date(agora.getFullYear(), 0, 1).getTime();
+
+            let totalHoje = 0, totalMes = 0, totalAno = 0;
+
+            (window.historico || []).forEach(h => {
+                if(h.tipo === 'Saída' && h.timestamp) {
+                    const valorVenda = (h.valorTotal || 0);
+                    if(h.timestamp >= inicioHoje) totalHoje += valorVenda;
+                    if(h.timestamp >= inicioMes) totalMes += valorVenda;
+                    if(h.timestamp >= inicioAno) totalAno += valorVenda;
+                }
+            });
+
+            document.getElementById('statVendasHoje').innerText = `R$ ${formatarNumeroParaMoeda(totalHoje)}`;
+            document.getElementById('statVendasMes').innerText = `R$ ${formatarNumeroParaMoeda(totalMes)}`;
+            document.getElementById('statVendasAno').innerText = `R$ ${formatarNumeroParaMoeda(totalAno)}`;
+        }
+
+        function filtrarEstoqueBaixo() {
+            apenasEstoqueBaixo = true;
+            document.getElementById('badgeFiltroBaixo').classList.remove('hidden');
+            renderizarTabela();
+        }
+
+        function limparFiltros() {
+            apenasEstoqueBaixo = false;
+            document.getElementById('badgeFiltroBaixo').classList.add('hidden');
+            document.getElementById('filtroBusca').value = '';
+            renderizarTabela();
         }
 
         function renderizarTabela() {
@@ -341,27 +452,31 @@
             const tbody = document.getElementById('tabelaProdutos');
             tbody.innerHTML = '';
 
-            const filtrados = (window.produtos || []).filter(p => p.nome.toLowerCase().includes(termo) || p.categoria.toLowerCase().includes(termo));
+            let filtrados = (window.produtos || []).filter(p => p.nome.toLowerCase().includes(termo) || p.categoria.toLowerCase().includes(termo));
+
+            if (apenasEstoqueBaixo) {
+                filtrados = filtrados.filter(p => p.estoque <= p.minimo);
+            }
 
             if(filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-zinc-500">Nenhum produto cadastrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Nenhum produto encontrado.</td></tr>`;
                 return;
             }
 
             filtrados.forEach(p => {
-                let imgHtml = p.foto ? `<img src="${p.foto}" class="w-8 h-8 rounded-lg object-cover">` : `<div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-pink-400 text-xs"><i class="fa-solid fa-wand-magic-sparkles"></i></div>`;
+                let imgHtml = p.foto ? `<img src="${p.foto}" class="w-8 h-8 rounded-lg object-cover">` : `<div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-blue-400 text-xs"><i class="fa-solid fa-box"></i></div>`;
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-zinc-900/40">
+                    <tr class="hover:bg-slate-900/40">
                         <td class="p-3 flex items-center space-x-2">
                             ${imgHtml}
-                            <span class="font-medium text-zinc-200">${p.nome}</span>
+                            <span class="font-medium text-slate-200">${p.nome}</span>
                         </td>
-                        <td class="p-3 text-zinc-200">R$ ${Number(p.venda).toFixed(2)}</td>
-                        <td class="p-3 font-bold ${p.estoque <= p.minimo ? 'text-rose-400' : 'text-zinc-100'}">${p.estoque}</td>
+                        <td class="p-3 text-slate-200">R$ ${formatarNumeroParaMoeda(p.venda)}</td>
+                        <td class="p-3 font-bold ${p.estoque <= p.minimo ? 'text-rose-400' : 'text-slate-100'}">${p.estoque}</td>
                         <td class="p-3 text-right space-x-3">
-                            <button type="button" onclick="editarProduto('${p.id}')" class="text-zinc-400 hover:text-pink-400 p-1"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" onclick="excluirProduto('${p.id}')" class="text-zinc-400 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="editarProduto('${p.id}')" class="text-slate-400 hover:text-blue-400 p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="excluirProduto('${p.id}')" class="text-slate-400 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -376,7 +491,7 @@
 
             (window.produtos || []).forEach(p => {
                 selectMov.innerHTML += `<option value="${p.id}">${p.nome} (${p.estoque} un)</option>`;
-                selectVenda.innerHTML += `<option value="${p.id}">${p.nome} - R$ ${Number(p.venda).toFixed(2)}</option>`;
+                selectVenda.innerHTML += `<option value="${p.id}">${p.nome} - R$ ${formatarNumeroParaMoeda(p.venda)}</option>`;
             });
         }
 
@@ -392,51 +507,65 @@
 
         function abrirModalProduto(id = null) {
             document.getElementById('modalProduto').classList.remove('hidden');
+            const painelRent = document.getElementById('painelRentabilidade');
+
             if(id) {
-                document.getElementById('modalTitulo').innerText = "Editar Maquilhagem";
+                document.getElementById('modalTitulo').innerText = "Editar Produto";
                 const p = window.produtos.find(item => String(item.id) === String(id));
                 document.getElementById('prodId').value = p.id;
                 document.getElementById('prodNome').value = p.nome;
                 document.getElementById('prodCategoria').value = p.categoria;
                 document.getElementById('prodMinimo').value = p.minimo;
-                document.getElementById('prodCusto').value = p.custo;
-                document.getElementById('prodVenda').value = p.venda;
+                document.getElementById('prodCusto').value = formatarNumeroParaMoeda(p.custo);
+                document.getElementById('prodVenda').value = formatarNumeroParaMoeda(p.venda);
                 document.getElementById('prodEstoque').value = p.estoque;
                 document.getElementById('prodFoto').value = p.foto || '';
+
+                // Exibe calculador individual de gastos/retorno do item
+                const gastoTotal = (p.custo || 0) * (p.estoque || 0);
+                const retornoTotal = (p.venda || 0) * (p.estoque || 0);
+                document.getElementById('prodGastoTotal').innerText = `R$ ${formatarNumeroParaMoeda(gastoTotal)}`;
+                document.getElementById('prodRetornoTotal').innerText = `R$ ${formatarNumeroParaMoeda(retornoTotal)}`;
+                painelRent.classList.remove('hidden');
             } else {
-                document.getElementById('modalTitulo').innerText = "Cadastrar Maquilhagem";
+                document.getElementById('modalTitulo').innerText = "Cadastrar Produto";
                 document.getElementById('formProduto').reset();
                 document.getElementById('prodId').value = '';
                 document.getElementById('prodFoto').value = '';
+                painelRent.classList.add('hidden');
             }
         }
 
-        function fecharModalProduto() {
-            document.getElementById('modalProduto').classList.add('hidden');
-        }
+        function fecharModalProduto() { document.getElementById('modalProduto').classList.add('hidden'); }
 
         async function salvarProduto(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnSalvarProd');
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Salvando...</span>`;
+            btn.disabled = true;
+
             const id = document.getElementById('prodId').value;
             const produtoObj = {
                 id: id || null,
                 nome: document.getElementById('prodNome').value,
                 categoria: document.getElementById('prodCategoria').value,
                 minimo: Number(document.getElementById('prodMinimo').value),
-                custo: Number(document.getElementById('prodCusto').value),
-                venda: Number(document.getElementById('prodVenda').value),
+                custo: converterMoedaParaNumero(document.getElementById('prodCusto').value),
+                venda: converterMoedaParaNumero(document.getElementById('prodVenda').value),
                 estoque: Number(document.getElementById('prodEstoque').value),
                 foto: document.getElementById('prodFoto').value
             };
 
             await window.salvarProdutoFirebase(produtoObj);
+            btn.innerHTML = `<span>Salvar</span>`;
+            btn.disabled = false;
             fecharModalProduto();
         }
 
         function editarProduto(id) { abrirModalProduto(id); }
 
         async function excluirProduto(id) {
-            if(confirm('Excluir este produto da nuvem?')) {
+            if(confirm('Excluir este produto?')) {
                 await window.excluirProdutoFirebase(id);
             }
         }
@@ -445,6 +574,7 @@
         function fecharVendaRapida() { document.getElementById('modalVendaRapida').classList.add('hidden'); }
 
         async function confirmarVendaRapida() {
+            const btn = document.getElementById('btnConfirmarVenda');
             const prodId = document.getElementById('vendaRapidaProd').value;
             const qtd = Number(document.getElementById('vendaRapidaQtd').value);
             const produto = window.produtos.find(p => String(p.id) === String(prodId));
@@ -454,20 +584,29 @@
                 return;
             }
 
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Baixando...</span>`;
+            btn.disabled = true;
+
             produto.estoque -= qtd;
+            const valorTotalVenda = produto.venda * qtd;
+
             await window.salvarProdutoFirebase(produto);
             await window.registrarHistoricoFirebase({
-                data: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                data: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 produto: produto.nome,
                 tipo: 'Saída',
-                qtd: qtd
+                qtd: qtd,
+                valorTotal: valorTotalVenda
             });
 
+            btn.innerHTML = `<span>Baixar no Estoque</span>`;
+            btn.disabled = false;
             fecharVendaRapida();
         }
 
         async function salvarMovimentacaoAvulsa(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnMovSubmit');
             const prodId = document.getElementById('movProduto').value;
             const tipo = document.getElementById('movTipo').value;
             const qtd = Number(document.getElementById('movQtd').value);
@@ -475,25 +614,41 @@
 
             if(!produto) return;
 
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Processando...</span>`;
+            btn.disabled = true;
+
             if(tipo === 'entrada') {
                 produto.estoque += qtd;
             } else {
                 if(produto.estoque < qtd) {
                     alert('Estoque insuficiente!');
+                    btn.innerHTML = `<span>Confirmar Lançamento</span>`;
+                    btn.disabled = false;
                     return;
                 }
                 produto.estoque -= qtd;
             }
 
+            const valorTotal = produto.venda * qtd;
+
             await window.salvarProdutoFirebase(produto);
             await window.registrarHistoricoFirebase({
-                data: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                data: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 produto: produto.nome,
                 tipo: tipo === 'entrada' ? 'Entrada' : 'Saída',
-                qtd: qtd
+                qtd: qtd,
+                valorTotal: tipo === 'saida' ? valorTotal : (produto.custo * qtd)
             });
 
+            btn.innerHTML = `<span>Confirmar Lançamento</span>`;
+            btn.disabled = false;
             mudarAba('catalogo');
+        }
+
+        async function limparHistorico() {
+            if(confirm('Tem certeza de que deseja apagar todo o histórico de movimentações?')) {
+                await window.limparHistoricoFirebase();
+            }
         }
 
         function renderizarHistorico() {
@@ -502,10 +657,11 @@
             (window.historico || []).forEach(h => {
                 tbody.innerHTML += `
                     <tr>
-                        <td class="p-2 text-zinc-400">${h.data}</td>
-                        <td class="p-2 font-medium text-zinc-200">${h.produto}</td>
-                        <td class="p-2">${h.tipo}</td>
+                        <td class="p-2 text-slate-400">${h.data || '-'}</td>
+                        <td class="p-2 font-medium text-slate-200">${h.produto}</td>
+                        <td class="p-2 font-semibold ${h.tipo === 'Entrada' ? 'text-blue-400' : 'text-emerald-400'}">${h.tipo}</td>
                         <td class="p-2 font-bold">${h.qtd} un</td>
+                        <td class="p-2 text-right font-medium text-slate-200">R$ ${formatarNumeroParaMoeda(h.valorTotal)}</td>
                     </tr>
                 `;
             });
