@@ -1,0 +1,17 @@
+{
+  "name": "BeautyControl Pro",
+  "short_name": "BeautyControl",
+  "description": "Controle de Estoque de Maquiagens",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121214",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
